@@ -65,12 +65,22 @@ public class GameBoard : MonoBehaviour
             return false;
     }
 
+
+    public void EndGame()
+    {
+        foreach (Cell cell in mCells)
+        {
+            cell.mButton.interactable = false;
+        }
+    }
+
     public void ResetBoard()
     {
         foreach(Cell cell in mCells)
         {
             cell.mLabel.text = "";
             cell.mButton.interactable = true;
+            Time.timeScale = 1;
         }
     }
 

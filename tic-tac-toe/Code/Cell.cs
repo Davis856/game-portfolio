@@ -9,6 +9,7 @@ public class Cell : MonoBehaviour
     public Text mLabel;
     public Button mButton;
     public Main mMain;
+    public Text mTurn;
 
     public void Fill()
     {
