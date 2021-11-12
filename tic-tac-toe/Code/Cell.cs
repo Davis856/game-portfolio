@@ -10,13 +10,25 @@ public class Cell : MonoBehaviour
     public Button mButton;
     public Main mMain;
     public Text mTurn;
+    public GameBoard mBoard;
+    public static bool mMulti;
 
     public void Fill()
     {
         mButton.interactable = false;
 
-        mLabel.text = mMain.GetTurnCharacter();
-
+        if (mMulti == false)
+        {
+            if (mMain.GetTurnCharacter() == "X")
+                mLabel.text = mMain.GetTurnCharacter();
+        }
+        else if (mMulti == true)
+        {
+            if (mMain.GetTurnCharacter() == "X")
+                mLabel.text = "X";
+            else if (mMain.GetTurnCharacter() == "O")
+                mLabel.text = "O";
+        }
         mMain.Switch();
     }
 }

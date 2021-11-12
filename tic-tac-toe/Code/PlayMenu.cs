@@ -5,17 +5,19 @@ using UnityEngine.SceneManagement;
 
 public class PlayMenu : MonoBehaviour
 {
+    public void Multiplayer()
+    {
+        SceneManager.LoadScene("MainGame");
+        Cell.mMulti = true;
+    }
+
+    
     public void Singleplayer()
     {
         SceneManager.LoadScene("MainGame");
+        Cell.mMulti = false;
     }
-
-    /*
-    public void Multiplayer()
-    {
-        SceneManager.LoadScene("Multiplayer");
-    }
-    */
+    
 
     public void Back()
     {

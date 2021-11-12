@@ -19,23 +19,47 @@ public class Main : MonoBehaviour
 
     private bool mXTurn = true;
     private int mTurnCount = 0;
-    
+
 
     //TODO Create save/load system using these
-    [SerializeField] private int xPoints = 0;
-    [SerializeField] private int oPoints = 0;
+    private int xPoints;
+    private int oPoints;
+    private int xPointsMP;
+    private int oPointsMP;
 
     void Awake()
     {
         winnerAnim = winnerAnimator.GetComponent<Animation>();
         mBoard.Build(this);
         mTurn.text = "X's Turn";
+        if (Cell.mMulti == false)
+        {
+            xPoints = PlayerPrefs.GetInt("xPoints");
+            oPoints = PlayerPrefs.GetInt("oPoints");
+            xScore.text = "X:" + PlayerPrefs.GetInt("xPoints");
+            oScore.text = "O:" + PlayerPrefs.GetInt("oPoints");
+        }
+        else if(Cell.mMulti == true)
+        {
+            xPointsMP = PlayerPrefs.GetInt("xPointsMP");
+            oPointsMP = PlayerPrefs.GetInt("oPointsMP");
+            xScore.text = "X:" + PlayerPrefs.GetInt("xPointsMP");
+            oScore.text = "O:" + PlayerPrefs.GetInt("oPointsMP");
+        }
     }
 
     void Update()
     {
-        xScore.text = "X:" + xPoints;
-        oScore.text = "O:" + oPoints;
+        if(Cell.mMulti == false)
+        {
+            xScore.text = "X:" + PlayerPrefs.GetInt("xPoints");
+            oScore.text = "O:" + PlayerPrefs.GetInt("oPoints");
+        }
+        else if(Cell.mMulti == true)
+        {
+            xScore.text = "X:" + PlayerPrefs.GetInt("xPointsMP");
+            oScore.text = "O:" + PlayerPrefs.GetInt("oPointsMP");
+        }
     }
 
     public void Switch()
@@ -43,6 +67,9 @@ public class Main : MonoBehaviour
         mTurnCount++;
 
         bool hasWinner = mBoard.CheckForWinner();
+
+        if(GetTurnCharacter() == "X" && hasWinner == false && mTurnCount !=9 && Cell.mMulti == false)
+            StartCoroutine(WaitABit());
 
         if (hasWinner || mTurnCount == 9)
         {
@@ -78,10 +105,35 @@ public class Main : MonoBehaviour
         if(hasWinner)
         {
             winnerLabel.text = GetTurnCharacter() + " " + "Won!";
-            if (GetTurnCharacter() == "X")
-                xPoints++;
-            else if (GetTurnCharacter() == "O")
-                oPoints++;
+            //easy save system - to be turned into serializeField
+            if (Cell.mMulti == false)
+            {
+                if (GetTurnCharacter() == "X")
+                {
+                    xPoints++;
+                    Debug.Log(xPoints);
+                    PlayerPrefs.SetInt("xPoints", xPoints);
+                }
+                else if (GetTurnCharacter() == "O")
+                {
+                    oPoints++;
+                    Debug.Log(oPoints);
+                    PlayerPrefs.SetInt("oPoints", oPoints);
+                }
+            }
+            else if (Cell.mMulti == true)
+            {
+                if (GetTurnCharacter() == "X")
+                {
+                    xPointsMP++;
+                    PlayerPrefs.SetInt("xPointsMP", xPointsMP);
+                }
+                else if (GetTurnCharacter() == "O")
+                {
+                    oPointsMP++;
+                    PlayerPrefs.SetInt("oPointsMP", oPointsMP);
+                }
+            }
         }
         else
         {
@@ -96,13 +148,19 @@ public class Main : MonoBehaviour
         WaitForSeconds wait = new WaitForSeconds(1.5f);
         yield return wait;
 
-        Time.timeScale = 0;
     }
 
+    private IEnumerator WaitABit()
+    {
+        WaitForSeconds waitaBit = new WaitForSeconds(1.0f);
+        yield return waitaBit;
+
+        mBoard.ComputerMoves();
+        Switch();
+    }
 
     public void RestartGame()
     {
-        //StartCoroutine(StartNewGame());
         mBoard.ResetBoard();
         mTurnCount = 0;
         mTurn.text = "X's Turn";
@@ -125,10 +183,9 @@ public class Main : MonoBehaviour
         SceneManager.LoadScene("PlayMenu");
     }
 
-
-    /*private IEnumerator StartNewGame()
+    public void ExitGame()
     {
-
-    }*/
+        Application.Quit();
+    }
 
 }
